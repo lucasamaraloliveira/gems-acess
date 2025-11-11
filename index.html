@@ -63,7 +63,7 @@
   <body class="dark">
     <header class="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
       <div class="container mx-auto px-6 py-4">
-        <nav class="flex items-center justify-between">
+        <nav class="flex items-center justify-between relative">
           <div class="flex items-center space-x-2">
             <div class="w-8 h-8 flex items-center justify-center">
               <i class="ri-gemini-fill text-2xl text-primary"></i>
@@ -92,12 +92,40 @@
               >Contato</a
             >
           </div>
-          <button class="md:hidden text-white">
+          <button id="mobile-menu-button" class="md:hidden text-white">
             <div class="w-6 h-6 flex items-center justify-center">
               <i class="ri-menu-line text-xl"></i>
             </div>
           </button>
-        </nav>
+
+          <div
+            id="mobile-menu-links"
+            class="hidden absolute top-full left-0 w-full bg-gray-900 border-b border-gray-800 md:hidden"
+          >
+            <div class="flex flex-col space-y-4 p-6">
+              <a
+                href="#inicio"
+                class="text-gray-300 hover:text-primary transition-colors"
+                >Início</a
+              >
+              <a
+                href="#produtos"
+                class="text-gray-300 hover:text-primary transition-colors"
+                >Produtos</a
+              >
+              <a
+                href="#precos"
+                class="text-gray-300 hover:text-primary transition-colors"
+                >Preços</a
+              >
+              <a
+                href="#contato"
+                class="text-gray-300 hover:text-primary transition-colors"
+                >Contato</a
+              >
+            </div>
+          </div>
+          </nav>
       </div>
     </header>
     <section
@@ -1222,10 +1250,11 @@
         });
       });
     </script>
+
     <script id="mobile-menu">
       document.addEventListener("DOMContentLoaded", function () {
-        const mobileMenuButton = document.querySelector(".md\\:hidden button");
-        const mobileMenu = document.querySelector(".md\\:flex");
+        const mobileMenuButton = document.getElementById("mobile-menu-button");
+        const mobileMenu = document.getElementById("mobile-menu-links");
         if (mobileMenuButton && mobileMenu) {
           mobileMenuButton.addEventListener("click", function () {
             mobileMenu.classList.toggle("hidden");
@@ -1373,55 +1402,55 @@
         });
       });
     </script>
-    
+
     <script id="form-submission">
-  document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("purchase-form");
-    const modal = document.getElementById("purchase-modal"); // <-- Variável correta
-    const submitButton = form.querySelector('button[type="submit"]');
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("purchase-form");
+        const modal = document.getElementById("purchase-modal"); // <-- Variável correta
+        const submitButton = form.querySelector('button[type="submit"]');
 
-    form.addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const originalButtonText = submitButton.innerHTML;
-      submitButton.innerHTML = "Enviando...";
-      submitButton.disabled = true;
+        form.addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const originalButtonText = submitButton.innerHTML;
+          submitButton.innerHTML = "Enviando...";
+          submitButton.disabled = true;
 
-      const formData = new FormData(this);
-      const data = {};
-      const funcionalidades = [];
+          const formData = new FormData(this);
+          const data = {};
+          const funcionalidades = [];
 
-      for (let [key, value] of formData.entries()) {
-        if (key === "funcionalidades") {
-          funcionalidades.push(value);
-        } else {
-          data[key] = value;
-        }
-      }
-      data.funcionalidades = funcionalidades.join(", ") || "Nenhuma";
-      data.plano =
-        data.plano.charAt(0).toUpperCase() + data.plano.slice(1);
-      data.preco_formatado = `R$ ${data.preco},00`;
+          for (let [key, value] of formData.entries()) {
+            if (key === "funcionalidades") {
+              funcionalidades.push(value);
+            } else {
+              data[key] = value;
+            }
+          }
+          data.funcionalidades = funcionalidades.join(", ") || "Nenhuma";
+          data.plano =
+            data.plano.charAt(0).toUpperCase() + data.plano.slice(1);
+          data.preco_formatado = `R$ ${data.preco},00`;
 
-      let response; 
+          let response;
 
-      try {
-        response = await fetch("https://api.web3forms.com/submit", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(data),
-        });
+          try {
+            response = await fetch("https://api.web3forms.com/submit", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+              body: JSON.stringify(data),
+            });
 
-        const result = await response.json();
+            const result = await response.json();
 
-        if (result.success) {
-          // Sucesso (como antes)
-          const successMessage = document.createElement("div");
-          successMessage.className =
-            "fixed top-4 right-4 bg-secondary text-white p-4 rounded-lg z-50 shadow-lg";
-          successMessage.innerHTML = `
+            if (result.success) {
+              // Sucesso (como antes)
+              const successMessage = document.createElement("div");
+              successMessage.className =
+                "fixed top-4 right-4 bg-secondary text-white p-4 rounded-lg z-50 shadow-lg";
+              successMessage.innerHTML = `
           <div class="flex items-center">
             <div class="w-6 h-6 flex items-center justify-center mr-3">
               <i class="ri-check-line"></i>
@@ -1431,47 +1460,43 @@
               <div class="text-sm opacity-90">Entraremos em contato em breve.</div>
             </div>
           </div>`;
-          document.body.appendChild(successMessage);
-          setTimeout(() => {
-            successMessage.remove();
-          }, 5000);
+              document.body.appendChild(successMessage);
+              setTimeout(() => {
+                successMessage.remove();
+              }, 5000);
 
-          // Limpa e fecha o modal
-          // ================== A CORREÇÃO ESTÁ AQUI ==================
-          modal.classList.add("hidden"); // <-- Estava 'purchaseModal'
-          // ==========================================================
-          document.body.style.overflow = "auto";
-          form.reset();
-          const charCount = document.getElementById("char-count");
-          charCount.textContent = "0/500";
-          const checkboxes =
-            document.querySelectorAll(".checkbox-custom i");
-          checkboxes.forEach((icon) => icon.classList.add("hidden"));
-        } else {
-          // Erro retornado pelo Web3Forms
-          console.error("Falha ao enviar formulário:", result.message);
-        }
-      } catch (error) {
-        // Erro de rede ou conexão
-        console.error("Erro de rede ou parsing:", error);
-        if (response && response.status === 403) {
-          console.error(
-            "Erro 403: Domínio não autorizado ou chave incorreta."
-          );
-        } else if (response && response.status === 429) {
-          console.error("Erro 429: Rate limit atingido. Muitos envios.");
-        } else {
-          console.error(
-            "Houve um erro de conexão."
-          );
-        }
-      } finally {
-        // Restaura o botão em qualquer cenário
-        submitButton.innerHTML = originalButtonText;
-        submitButton.disabled = false;
-      }
-    });
-  });
-</script>
-    </body>
+              // Limpa e fecha o modal
+              modal.classList.add("hidden"); // <-- Linha corrigida
+              document.body.style.overflow = "auto";
+              form.reset();
+              const charCount = document.getElementById("char-count");
+              charCount.textContent = "0/500";
+              const checkboxes =
+                document.querySelectorAll(".checkbox-custom i");
+              checkboxes.forEach((icon) => icon.classList.add("hidden"));
+            } else {
+              // Erro retornado pelo Web3Forms
+              console.error("Falha ao enviar formulário:", result.message);
+            }
+          } catch (error) {
+            // Erro de rede ou conexão
+            console.error("Erro de rede ou parsing:", error);
+            if (response && response.status === 403) {
+              console.error(
+                "Erro 403: Domínio não autorizado ou chave incorreta."
+              );
+            } else if (response && response.status === 429) {
+              console.error("Erro 429: Rate limit atingido. Muitos envios.");
+            } else {
+              console.error("Houve um erro de conexão.");
+            }
+          } finally {
+            // Restaura o botão em qualquer cenário
+            submitButton.innerHTML = originalButtonText;
+            submitButton.disabled = false;
+          }
+        });
+      });
+    </script>
+  </body>
 </html>
