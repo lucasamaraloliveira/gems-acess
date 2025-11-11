@@ -1445,29 +1445,28 @@
           const checkboxes =
             document.querySelectorAll(".checkbox-custom i");
           checkboxes.forEach((icon) => icon.classList.add("hidden"));
-        
         } else {
           // Erro retornado pelo Web3Forms (ex: chave errada, domínio não autorizado)
-          console.error("Falha ao enviar formulário:", result);
-          alert(
-            `Houve um erro no servidor: ${result.message}. Verifique a sua chave de acesso ou autorização de domínio.`
-          );
+          // MENSAGEM DE ALERT REMOVIDA DAQUI
+          console.error("Falha ao enviar formulário:", result.message);
         }
       } catch (error) {
         // Erro de rede (conexão caiu) ou erro de 'parsing'
+        // MENSAGENS DE ALERT REMOVIDAS DAQUI
         console.error("Erro de rede ou parsing:", error);
-        
+
         // Esta parte nova identifica o erro de "domínio"
         if (response && response.status === 403) {
-           alert("Erro: Domínio não autorizado. (Seu primeiro teste funcionou, então isso pode ser um erro de cache. Por favor, limpe o cache e tente de novo.)");
+          console.error(
+            "Erro 403: Domínio não autorizado ou chave incorreta."
+          );
         } else if (response && response.status === 429) {
-           alert("Erro: Muitos envios. Por favor, aguarde alguns minutos antes de tentar novamente.");
+          console.error("Erro 429: Rate limit atingido. Muitos envios.");
         } else {
-           alert(
-            "Houve um erro de conexão. Verifique sua internet ou tente novamente."
-           );
+          console.error(
+            "Houve um erro de conexão."
+          );
         }
-       
       } finally {
         // Restaura o botão em qualquer cenário
         submitButton.innerHTML = originalButtonText;
