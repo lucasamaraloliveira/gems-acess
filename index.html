@@ -1377,7 +1377,7 @@
     <script id="form-submission">
   document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("purchase-form");
-    const modal = document.getElementById("purchase-modal");
+    const modal = document.getElementById("purchase-modal"); // <-- Variável correta
     const submitButton = form.querySelector('button[type="submit"]');
 
     form.addEventListener("submit", async function (e) {
@@ -1402,7 +1402,7 @@
         data.plano.charAt(0).toUpperCase() + data.plano.slice(1);
       data.preco_formatado = `R$ ${data.preco},00`;
 
-      let response; // Definir response aqui para usá-lo no 'finally'
+      let response; 
 
       try {
         response = await fetch("https://api.web3forms.com/submit", {
@@ -1437,7 +1437,9 @@
           }, 5000);
 
           // Limpa e fecha o modal
-          purchaseModal.classList.add("hidden");
+          // ================== A CORREÇÃO ESTÁ AQUI ==================
+          modal.classList.add("hidden"); // <-- Estava 'purchaseModal'
+          // ==========================================================
           document.body.style.overflow = "auto";
           form.reset();
           const charCount = document.getElementById("char-count");
@@ -1446,16 +1448,12 @@
             document.querySelectorAll(".checkbox-custom i");
           checkboxes.forEach((icon) => icon.classList.add("hidden"));
         } else {
-          // Erro retornado pelo Web3Forms (ex: chave errada, domínio não autorizado)
-          // MENSAGEM DE ALERT REMOVIDA DAQUI
+          // Erro retornado pelo Web3Forms
           console.error("Falha ao enviar formulário:", result.message);
         }
       } catch (error) {
-        // Erro de rede (conexão caiu) ou erro de 'parsing'
-        // MENSAGENS DE ALERT REMOVIDAS DAQUI
+        // Erro de rede ou conexão
         console.error("Erro de rede ou parsing:", error);
-
-        // Esta parte nova identifica o erro de "domínio"
         if (response && response.status === 403) {
           console.error(
             "Erro 403: Domínio não autorizado ou chave incorreta."
